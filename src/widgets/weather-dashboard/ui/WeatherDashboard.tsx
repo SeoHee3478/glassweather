@@ -103,13 +103,6 @@ export const WeatherDashboard = () => {
       : (weatherCityError || forecastCityError) && !canUseCoordsAsBackup // 도시명 에러 + 좌표 없음
     : weatherCoordsError || forecastCoordsError;
 
-  console.log(
-    "hasError",
-    hasError,
-    "canUseCoordsAsBackup",
-    canUseCoordsAsBackup
-  );
-
   const handleLocationSelect = (location: string) => {
     setSelectedLocation(location);
     setUseCoords(false);
