@@ -3,12 +3,17 @@ import type { WeatherResponse, ForecastResponse } from "../model/types";
 interface WeatherCardProps {
   weather: WeatherResponse;
   forecast: ForecastResponse;
+  displayName?: string;
 }
 
-export const WeatherCard = ({ weather, forecast }: WeatherCardProps) => {
+export const WeatherCard = ({
+  weather,
+  forecast,
+  displayName,
+}: WeatherCardProps) => {
   return (
     <div className="w-full p-6 border-2 border-gray-300 rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold">{weather.name}</h2>
+      <h2 className="text-2xl font-bold"> {displayName || weather.name} </h2>
 
       <div className="my-4">
         <p className="text-4xl">{Math.round(weather.main.temp)}°C</p>
