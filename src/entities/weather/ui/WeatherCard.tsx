@@ -16,7 +16,7 @@ export const WeatherCard = ({ weather, forecast }: WeatherCardProps) => {
       </div>
       <div>
         {forecast.list.slice(0, 8).map((item) => (
-          <div key={item.dt}>
+          <div key={item.dt} className="flex justify-between">
             <span>
               {new Date(item.dt_txt).toLocaleTimeString("ko-KR", {
                 hour: "2-digit",
