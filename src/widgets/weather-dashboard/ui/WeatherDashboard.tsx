@@ -31,10 +31,6 @@ export const WeatherDashboard = () => {
     return <div>날씨 정보를 가져오는 중...</div>;
   }
 
-  if (geoError) {
-    return <div>위치 권한이 필요합니다: {geoError}</div>;
-  }
-
   if (weatherError || forecastError) {
     return <div>날씨 정보를 가져올 수 없습니다.</div>;
   }
@@ -45,6 +41,11 @@ export const WeatherDashboard = () => {
 
   return (
     <div>
+      {geoError && (
+        <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-800 text-sm">
+          위치 권한이 거부되어 서울의 날씨를 표시합니다.
+        </div>
+      )}
       <WeatherCard weather={weatherData} forecast={forecastData} />
     </div>
   );
