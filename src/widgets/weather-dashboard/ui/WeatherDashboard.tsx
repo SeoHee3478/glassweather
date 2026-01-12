@@ -1,41 +1,51 @@
-import { useState } from "react";
 import {
-  useWeatherByCity,
   useWeatherByCoords,
+  useForecastByCoords,
 } from "@/entities/weather/model/queries";
 import { WeatherCard } from "@/entities/weather";
 import { useGeolocation } from "@/shared/hooks/useGeolocation";
 
 export const WeatherDashboard = () => {
-  const [city] = useState("seoul");
   const {
     latitude,
     longitude,
     error: geoError,
     loading: geoLoading,
   } = useGeolocation();
-  // const { data: weatherByCityData, isLoading: weatherByCityLoading, error:weatherByCityError } = useWeatherByCity(city);
+
+  // 현재 날씨
   const {
-    data: weatherByCoordsData,
-    isLoading: weatherByCoordsLoading,
-    error: weatherByCoordsError,
+    data: weatherData,
+    isLoading: weatherLoading,
+    error: weatherError,
   } = useWeatherByCoords(latitude, longitude);
 
-  if (geoLoading || weatherByCoordsLoading) {
-    return <div>위치 정보를 가져오는 중...</div>;
+  // 시간대별 예보
+  const {
+    data: forecastData,
+    isLoading: forecastLoading,
+    error: forecastError,
+  } = useForecastByCoords(latitude, longitude);
+
+  if (geoLoading || weatherLoading || forecastLoading) {
+    return <div>날씨 정보를 가져오는 중...</div>;
   }
 
   if (geoError) {
     return <div>위치 권한이 필요합니다: {geoError}</div>;
   }
 
-  if (weatherByCoordsError) {
+  if (weatherError || forecastError) {
     return <div>날씨 정보를 가져올 수 없습니다.</div>;
+  }
+
+  if (!weatherData || !forecastData) {
+    return <div>날씨 정보가 없습니다.</div>;
   }
 
   return (
     <div>
-      {weatherByCoordsData && <WeatherCard weather={weatherByCoordsData} />}
+      <WeatherCard weather={weatherData} forecast={forecastData} />
     </div>
   );
 };
