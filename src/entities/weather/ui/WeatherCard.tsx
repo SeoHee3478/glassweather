@@ -7,25 +7,32 @@ interface WeatherCardProps {
 
 export const WeatherCard = ({ weather, forecast }: WeatherCardProps) => {
   return (
-    <div>
-      <h2>{weather.name}</h2>
-      <div>
-        <p>현재기온: {weather.main.temp}°C</p>
-        <p>당일의 최저 기온: {weather.main.temp_min}°C</p>
-        <p>당일의 최고 기온: {weather.main.temp_max}°C</p>
+    <div className="w-full p-6 border-2 border-gray-300 rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold">{weather.name}</h2>
+
+      <div className="my-4">
+        <p className="text-4xl">{Math.round(weather.main.temp)}°C</p>
+        <p className="text-sm text-gray-600">
+          최저 {Math.round(weather.main.temp_min)}°C / 최고{" "}
+          {Math.round(weather.main.temp_max)}°C
+        </p>
       </div>
+
       <div>
-        {forecast.list.slice(0, 8).map((item) => (
-          <div key={item.dt} className="flex justify-between">
-            <span>
-              {new Date(item.dt_txt).toLocaleTimeString("ko-KR", {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
-            </span>
-            <span>{Math.round(item.main.temp)}°C</span>
-          </div>
-        ))}
+        <h3 className="text-lg font-semibold mb-2">시간대별 기온</h3>
+        <div className="space-y-1">
+          {forecast.list.slice(0, 8).map((item) => (
+            <div key={item.dt} className="flex justify-between">
+              <span>
+                {new Date(item.dt_txt).toLocaleTimeString("ko-KR", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </span>
+              <span>{Math.round(item.main.temp)}°C</span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
