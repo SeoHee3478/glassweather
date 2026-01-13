@@ -81,12 +81,16 @@ export const WeatherDetail = ({ lat, lon, location }: WeatherDetailProps) => {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-4">{locationName}</h1>
-      <AddFavoriteButton
-        weather={weatherByCoords}
-        locationName={locationName}
-        variant="icon" // 아이콘만 표시
-      />
+      <div className="flex item-center justify-between gap-2 mb-4">
+        <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold">
+          {locationName}
+        </h1>
+        <AddFavoriteButton
+          weather={weatherByCoords}
+          locationName={locationName}
+          variant="icon" // 아이콘만 표시
+        />
+      </div>
       {/* 현재 날씨 요약 */}
       <section className="bg-blue-50 rounded-lg p-6 mb-6">
         <div className="flex items-center justify-between">

@@ -2,6 +2,11 @@ import { useNavigate } from "react-router-dom";
 import { useWeatherByCoords } from "@/entities/weather/model/queries";
 import { useState } from "react";
 import { useFavoritesStore, type Favorite } from "../model/useFavoritesStore";
+import {
+  PencilSquareIcon,
+  StarIcon as StarSolid,
+} from "@heroicons/react/24/solid";
+import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 interface FavoriteCardProps {
   favorite: Favorite;
@@ -100,34 +105,34 @@ export const FavoriteCard = ({ favorite }: FavoriteCardProps) => {
             <>
               <button
                 onClick={handleSaveAlias}
-                className="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600"
+                className="p-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600"
                 title="저장"
               >
-                ✓
+                <CheckIcon className="w-5 h-5" />
               </button>
               <button
                 onClick={handleCancelEdit}
-                className="px-2 py-1 bg-gray-300 text-gray-700 rounded text-xs hover:bg-gray-400"
+                className="p-1 bg-gray-300 text-gray-700 rounded text-xs hover:bg-gray-400"
                 title="취소"
               >
-                ✕
+                <XMarkIcon className="w-5 h-5" />
               </button>
             </>
           ) : (
             <>
               <button
                 onClick={handleEditClick}
-                className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                className="p-1 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
                 title="이름 수정"
               >
-                ✏️
+                <PencilSquareIcon className="w-6 h-6" />
               </button>
               <button
                 onClick={handleDelete}
-                className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                className="p-1 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
                 title="삭제"
               >
-                🗑️
+                <StarSolid className="w-6 h-6 text-yellow-400" />
               </button>
             </>
           )}

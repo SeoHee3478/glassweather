@@ -1,5 +1,7 @@
 import { useFavoritesStore } from "../model/useFavoritesStore";
 import type { WeatherResponse } from "@/entities/weather/model/types";
+import { StarIcon } from "@heroicons/react/24/outline";
+import { StarIcon as StarSolid } from "@heroicons/react/24/solid";
 
 interface AddFavoriteButtonProps {
   weather: WeatherResponse;
@@ -49,7 +51,13 @@ export const AddFavoriteButton = ({
         `}
         aria-label={isAlreadyFavorite ? "즐겨찾기 해제" : "즐겨찾기 추가"}
       >
-        <span className="text-3xl">{isAlreadyFavorite ? "⭐" : "☆"}</span>
+        <span className="text-3xl">
+          {isAlreadyFavorite ? (
+            <StarSolid className="w-6 h-6 text-yellow-400" />
+          ) : (
+            <StarIcon className="w-6 h-6" />
+          )}
+        </span>
       </button>
     );
   }
@@ -69,7 +77,13 @@ export const AddFavoriteButton = ({
         }
       `}
     >
-      <span className="text-xl">{isAlreadyFavorite ? "⭐" : "☆"}</span>
+      <span className="text-xl">
+        {isAlreadyFavorite ? (
+          <StarSolid className="w-6 h-6 text-yellow-400" />
+        ) : (
+          <StarIcon className="w-6 h-6" />
+        )}
+      </span>
       <span>{isAlreadyFavorite ? "즐겨찾기 해제" : "즐겨찾기 추가"}</span>
     </button>
   );
