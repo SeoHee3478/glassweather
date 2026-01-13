@@ -1,10 +1,15 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { Container } from "@/shared/ui/Container";
+import { WeatherDetail } from "@/widgets/weather-detail/ui/WeatherDetail";
 
 export const DetailPage = () => {
-  const { location } = useParams<{ location: string }>();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
+  const lat = searchParams.get("lat");
+  const lon = searchParams.get("lon");
+  const location = searchParams.get("location");
+  console.log(lat, lon, location);
   return (
     <Container>
       <button
@@ -14,12 +19,7 @@ export const DetailPage = () => {
         ← 뒤로가기
       </button>
 
-      <h1 className="text-3xl font-bold mb-6">
-        {decodeURIComponent(location || "")} 날씨 상세
-      </h1>
-
-      {/* 여기에 WeatherCard 들어갈 예정 */}
-      <p>상세 페이지 구현 중...</p>
+      <WeatherDetail lat={lat} lon={lon} location={location} />
     </Container>
   );
 };

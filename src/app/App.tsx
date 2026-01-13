@@ -10,7 +10,7 @@ function App() {
       <QueryProvider>
         <Routes>
           <Route path="/" element={<MainPage />}></Route>
-          <Route path="/detail/:location" element={<DetailPage />}></Route>
+          <Route path="/detail" element={<DetailPage />}></Route>
         </Routes>
       </QueryProvider>
     </RouterProvider>
