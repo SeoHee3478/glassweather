@@ -10,6 +10,7 @@ import { convertToEnglishCity } from "@/shared/lib/cityNameMapper";
 import { LocationSearch } from "@/features/location-search/ui/LocationSearch";
 import { useEffect, useState } from "react";
 import { getCityCoordinates } from "@/shared/lib/locationUtils";
+import { FavoritesList } from "@/features/favorites/ui/FavoritesList";
 
 export const WeatherDashboard = () => {
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
@@ -41,7 +42,7 @@ export const WeatherDashboard = () => {
     error: forecastCoordsError,
   } = useForecastByCoords(targetCoords?.lat, targetCoords?.lon);
 
-  // 도시명 기반 (변경 없음)
+  // 도시명 기반
   const searchCity =
     selectedLocation && !useCoords
       ? convertToEnglishCity(selectedLocation)
@@ -99,8 +100,8 @@ export const WeatherDashboard = () => {
 
   const hasError = selectedLocation
     ? useCoords
-      ? weatherCoordsError || forecastCoordsError // 좌표 모드 에러
-      : (weatherCityError || forecastCityError) && !canUseCoordsAsBackup // 도시명 에러 + 좌표 없음
+      ? weatherCoordsError || forecastCoordsError
+      : (weatherCityError || forecastCityError) && !canUseCoordsAsBackup
     : weatherCoordsError || forecastCoordsError;
 
   const handleLocationSelect = (location: string) => {
@@ -109,7 +110,7 @@ export const WeatherDashboard = () => {
   };
 
   return (
-    <div>
+    <div className="space-y-6">
       <LocationSearch onSelectLocation={handleLocationSelect} />
 
       {geoError && !selectedLocation && (
@@ -141,8 +142,12 @@ export const WeatherDashboard = () => {
           weather={currentWeather}
           forecast={currentForecast}
           displayName={selectedLocation?.split("-").pop()}
+          locationName={selectedLocation || "현재 위치"}
+          showFavoriteButton={true}
         />
       )}
+
+      <FavoritesList />
     </div>
   );
 };
