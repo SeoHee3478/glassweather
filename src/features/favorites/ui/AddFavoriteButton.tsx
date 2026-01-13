@@ -1,4 +1,3 @@
-// app/features/favorites/ui/AddFavoriteButton.tsx
 import { useFavoritesStore } from "../model/useFavoritesStore";
 import type { WeatherResponse } from "@/entities/weather/model/types";
 
@@ -15,10 +14,10 @@ export const AddFavoriteButton = ({
 }: AddFavoriteButtonProps) => {
   const addFavorite = useFavoritesStore((state) => state.addFavorite);
   const removeFavorite = useFavoritesStore((state) => state.removeFavorite);
-  const isFavorite = useFavoritesStore((state) => state.isFavorite);
 
+  const favorites = useFavoritesStore((state) => state.favorites);
   const favoriteId = `${weather.coord.lat},${weather.coord.lon}`;
-  const isAlreadyFavorite = isFavorite(favoriteId);
+  const isAlreadyFavorite = favorites.some((fav) => fav.id === favoriteId);
 
   const handleToggleFavorite = () => {
     if (isAlreadyFavorite) {

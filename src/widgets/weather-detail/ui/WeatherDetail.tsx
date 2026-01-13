@@ -3,6 +3,7 @@ import {
   useForecastByCoords,
 } from "@/entities/weather/model/queries";
 import type { ForecastItem } from "@/entities/weather/model/types";
+import { AddFavoriteButton } from "@/features/favorites/ui/AddFavoriteButton";
 
 interface WeatherDetailProps {
   lat: string | null;
@@ -81,7 +82,11 @@ export const WeatherDetail = ({ lat, lon, location }: WeatherDetailProps) => {
   return (
     <div>
       <h1 className="text-3xl font-bold mb-4">{locationName}</h1>
-
+      <AddFavoriteButton
+        weather={weatherByCoords}
+        locationName={locationName}
+        variant="icon" // 아이콘만 표시
+      />
       {/* 현재 날씨 요약 */}
       <section className="bg-blue-50 rounded-lg p-6 mb-6">
         <div className="flex items-center justify-between">
