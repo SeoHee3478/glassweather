@@ -1,4 +1,3 @@
-// app/features/favorites/ui/FavoriteCard.tsx
 import { useNavigate } from "react-router-dom";
 import { useWeatherByCoords } from "@/entities/weather/model/queries";
 import { useState } from "react";
@@ -24,7 +23,11 @@ export const FavoriteCard = ({ favorite }: FavoriteCardProps) => {
   const handleCardClick = () => {
     // 편집 중이 아닐 때만 상세 페이지로 이동
     if (!isEditing) {
-      navigate(`/detail/${favorite.lat},${favorite.lon}`);
+      navigate(
+        `/detail?lat=${favorite.lat}&lon=${
+          favorite.lon
+        }&location=${encodeURIComponent(favorite.name)}`
+      );
     }
   };
 
