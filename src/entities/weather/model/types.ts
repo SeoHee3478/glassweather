@@ -20,3 +20,13 @@ export interface WeatherResponse {
   name: string;
   dt: number;
 }
+
+export interface ForecastResponse {
+  list: Array<{
+    dt: number;
+    dt_txt: string;
+    main: {
+      temp: number;
+    };
+  }>;
+}
