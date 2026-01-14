@@ -22,11 +22,19 @@ export interface WeatherResponse {
 }
 
 export interface ForecastResponse {
-  list: Array<{
-    dt: number;
-    dt_txt: string;
-    main: {
-      temp: number;
-    };
+  list: ForecastItem[];
+}
+
+export interface ForecastItem {
+  dt: number;
+  dt_txt: string;
+  main: {
+    temp: number;
+  };
+  weather: Array<{
+    id: number;
+    main: string;
+    description: string;
+    icon: string;
   }>;
 }
