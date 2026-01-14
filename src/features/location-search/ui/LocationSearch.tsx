@@ -24,7 +24,7 @@ export const LocationSearch = ({ onSelectLocation }: LocationSearchProps) => {
         // 검색어로 필터링
         const results = searchDistricts(koreaDistricts, query);
 
-        setSearchResults(results.slice(0, 10));
+        setSearchResults(results);
         setIsOpen(true);
       }, 300),
     []
