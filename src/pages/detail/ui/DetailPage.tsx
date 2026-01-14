@@ -9,7 +9,7 @@ export const DetailPage = () => {
   const lat = searchParams.get("lat");
   const lon = searchParams.get("lon");
   const location = searchParams.get("location");
-  console.log(lat, lon, location);
+
   return (
     <Container>
       <button

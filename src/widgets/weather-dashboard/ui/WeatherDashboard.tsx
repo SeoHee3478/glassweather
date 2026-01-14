@@ -141,7 +141,7 @@ export const WeatherDashboard = () => {
         <WeatherCard
           weather={currentWeather}
           forecast={currentForecast}
-          displayName={selectedLocation?.split("-").pop()}
+          displayName={selectedLocation || undefined}
           locationName={selectedLocation || "현재 위치"}
           showFavoriteButton={true}
         />
