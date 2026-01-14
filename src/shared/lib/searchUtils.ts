@@ -145,6 +145,5 @@ export const searchDistricts = (
       score: calculateRelevance(d, normalizedQuery),
     }))
     .sort((a, b) => b.score - a.score)
-    .slice(0, 10)
     .map((item) => item.district);
 };
