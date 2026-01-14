@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import koreaDistricts from "@/shared/data/korea_districts.json";
+import { searchDistricts } from "@/shared/lib/searchUtils";
 import debounce from "lodash/debounce";
 
 interface LocationSearchProps {
@@ -21,9 +22,7 @@ export const LocationSearch = ({ onSelectLocation }: LocationSearchProps) => {
           return;
         }
         // 검색어로 필터링
-        const results = koreaDistricts.filter((distric) =>
-          distric.includes(query)
-        );
+        const results = searchDistricts(koreaDistricts, query);
 
         setSearchResults(results.slice(0, 10));
         setIsOpen(true);
