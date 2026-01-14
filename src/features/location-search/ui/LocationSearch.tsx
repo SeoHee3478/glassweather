@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import koreaDistricts from "@/shared/data/korea_districts.json";
+import debounce from "lodash/debounce";
 
 interface LocationSearchProps {
   onSelectLocation: (location: string) => void;
@@ -10,29 +11,43 @@ export const LocationSearch = ({ onSelectLocation }: LocationSearchProps) => {
   const [searchResults, setSearchResults] = useState<string[]>([]);
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
+  // 디바운싱된 검색 함수 (300ms 지연)
+  const debouncedSearch = useMemo(
+    () =>
+      debounce((query: string) => {
+        if (query.trim() === "") {
+          setSearchResults([]);
+          setIsOpen(false);
+          return;
+        }
+        // 검색어로 필터링
+        const results = koreaDistricts.filter((distric) =>
+          distric.includes(query)
+        );
 
-    if (query.trim() === "") {
-      setSearchResults([]);
-      setIsOpen(false);
-      return;
-    }
+        setSearchResults(results.slice(0, 10));
+        setIsOpen(true);
+      }, 300),
+    []
+  );
 
-    // 검색어로 필터링
-    const results = koreaDistricts.filter((district) =>
-      district.includes(query)
-    );
-
-    setSearchResults(results.slice(0, 10)); // 최대 10개만 표시
-    setIsOpen(true);
-  };
+  const handleSearch = useCallback(
+    (query: string) => {
+      setSearchQuery(query);
+      debouncedSearch(query);
+    },
+    [debouncedSearch]
+  );
 
   const handleSelectLocation = (location: string) => {
     setSearchQuery(location);
     setIsOpen(false);
     onSelectLocation(location);
   };
+
+  useEffect(() => {
+    return () => debouncedSearch.cancel();
+  }, [debouncedSearch]);
 
   return (
     <div className="relative w-full mb-6">
@@ -43,7 +58,6 @@ export const LocationSearch = ({ onSelectLocation }: LocationSearchProps) => {
         placeholder="지역을 검색하세요 (예: 서울, 종로구, 청운동)"
         className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
       />
-
       {isOpen && searchResults.length > 0 && (
         <div className="absolute z-10 w-full mt-2 bg-white border-2 border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
           {searchResults.map((location, index) => (
