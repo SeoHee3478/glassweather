@@ -64,7 +64,13 @@ export const FavoriteCard = ({ favorite }: FavoriteCardProps) => {
 
   const handleSaveAlias = (e: React.MouseEvent) => {
     e.stopPropagation();
-    updateAlias(favorite.id, editValue);
+    const currentAlias = favorite.alias || favorite.name;
+    const hasChanged = editValue !== currentAlias;
+
+    if (hasChanged) {
+      updateAlias(favorite.id, editValue);
+      toast.success("별칭이 수정되었습니다");
+    }
     setIsEditing(false);
   };
 
