@@ -60,6 +60,7 @@ export const FavoriteCard = ({ favorite }: FavoriteCardProps) => {
 
   const handleEditClick = (e: React.MouseEvent) => {
     e.stopPropagation();
+    setEditValue(favorite.alias || favorite.name);
     setIsEditing(true);
   };
 
