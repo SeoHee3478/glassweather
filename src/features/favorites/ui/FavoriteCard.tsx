@@ -7,6 +7,7 @@ import {
   StarIcon as StarSolid,
 } from "@heroicons/react/24/solid";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { toast } from "sonner";
 
 interface FavoriteCardProps {
   favorite: Favorite;
@@ -38,11 +39,22 @@ export const FavoriteCard = ({ favorite }: FavoriteCardProps) => {
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (
-      confirm(`"${favorite.alias || favorite.name}"을(를) 삭제하시겠습니까?`)
-    ) {
-      removeFavorite(favorite.id);
-    }
+    const displayName = favorite.alias || favorite.name;
+
+    toast(`"${displayName}"을(를) 삭제하시겠습니까?`, {
+      action: {
+        label: "삭제",
+        onClick: () => {
+          removeFavorite(favorite.id);
+          toast.success("즐겨찾기에서 삭제되었습니다");
+        },
+      },
+      cancel: {
+        label: "취소",
+        onClick: () => {},
+      },
+      duration: 5000,
+    });
   };
 
   const handleEditClick = (e: React.MouseEvent) => {
