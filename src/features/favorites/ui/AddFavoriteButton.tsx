@@ -19,7 +19,7 @@ export const AddFavoriteButton = ({
   const removeFavorite = useFavoritesStore((state) => state.removeFavorite);
 
   const favorites = useFavoritesStore((state) => state.favorites);
-  const favoriteId = `${weather.coord.lat},${weather.coord.lon}`;
+  const favoriteId = `${weather.coord.lat.toFixed(4)},${weather.coord.lon.toFixed(4)}`;
   const isAlreadyFavorite = favorites.some((fav) => fav.id === favoriteId);
 
   const maxFavorites = useFavoritesStore((state) => state.maxFavorites);
