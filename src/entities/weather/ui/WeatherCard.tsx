@@ -22,7 +22,9 @@ export const WeatherCard = ({
       {/* 헤더 영역 */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-2xl font-bold">
-          {displayName ? formatLocationName(displayName) : weather.name}
+          {displayName
+            ? formatLocationName(displayName)
+            : locationName || weather.name}
         </h2>
 
         {/* 헤더에 즐겨찾기 버튼 (아이콘만) */}

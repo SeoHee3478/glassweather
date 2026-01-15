@@ -11,6 +11,7 @@ import { LocationSearch } from "@/features/location-search/ui/LocationSearch";
 import { useState, useMemo } from "react";
 import { getCityCoordinates } from "@/shared/lib/locationUtils";
 import { FavoritesList } from "@/features/favorites/ui/FavoritesList";
+import { useKoreanCityName } from "@/entities/location/model/queries";
 
 export const WeatherDashboard = () => {
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
@@ -72,6 +73,13 @@ export const WeatherDashboard = () => {
     error: forecastCoordsError,
   } = useForecastByCoords(targetCoords?.lat, targetCoords?.lon);
 
+  // 한글 지명 조회(좌표가 있을 때만)
+  const { data: koreanCityName, isLoading: isLoadingKoreanName } =
+    useKoreanCityName(
+      targetCoords?.lat ?? undefined,
+      targetCoords?.lon ?? undefined
+    );
+
   // 현재 사용할 날씨 데이터 결정
   const currentWeather = useMemo(() => {
     if (!selectedLocation) return weatherByCoords;
@@ -128,6 +136,12 @@ export const WeatherDashboard = () => {
     setSelectedLocation(location);
   };
 
+  const displayLocationName = useMemo(() => {
+    if (selectedLocation) return selectedLocation;
+    if (!isLoadingKoreanName && koreanCityName) return koreanCityName;
+    return currentWeather?.name || "현재 위치";
+  }, [selectedLocation, isLoadingKoreanName, koreanCityName, currentWeather]);
+
   return (
     <div className="space-y-6">
       <LocationSearch onSelectLocation={handleLocationSelect} />
@@ -161,7 +175,7 @@ export const WeatherDashboard = () => {
           weather={currentWeather}
           forecast={currentForecast}
           displayName={selectedLocation || undefined}
-          locationName={selectedLocation || "현재 위치"}
+          locationName={displayLocationName}
           showFavoriteButton={true}
         />
       )}
