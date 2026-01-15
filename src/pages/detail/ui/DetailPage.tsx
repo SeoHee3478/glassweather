@@ -9,6 +9,7 @@ export const DetailPage = () => {
   const lat = searchParams.get("lat");
   const lon = searchParams.get("lon");
   const location = searchParams.get("location");
+  const originalName = searchParams.get("originalName");
 
   return (
     <Container>
@@ -19,7 +20,12 @@ export const DetailPage = () => {
         ← 뒤로가기
       </button>
 
-      <WeatherDetail lat={lat} lon={lon} location={location} />
+      <WeatherDetail
+        lat={lat}
+        lon={lon}
+        location={location}
+        originalName={originalName}
+      />
     </Container>
   );
 };

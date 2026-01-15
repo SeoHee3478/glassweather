@@ -1,5 +1,11 @@
 import { CITY_COORDINATES } from "@/shared/data/cityCoordinates";
 
+/**
+ * 지명에서 "-"를 공백으로 변환하여 표시용 문자열로 변환
+ * @example "충청남도-천안시" → "충청남도 천안시"
+ */
+export const formatLocationName = (name: string) => name.replace(/-/g, " ");
+
 export const getCityCoordinates = (koreanLocation: string) => {
   const parts = koreanLocation.split("-");
 

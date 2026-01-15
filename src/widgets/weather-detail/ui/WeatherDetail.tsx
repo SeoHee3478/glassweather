@@ -9,9 +9,15 @@ interface WeatherDetailProps {
   lat: string | null;
   lon: string | null;
   location: string | null;
+  originalName: string | null;
 }
 
-export const WeatherDetail = ({ lat, lon, location }: WeatherDetailProps) => {
+export const WeatherDetail = ({
+  lat,
+  lon,
+  location,
+  originalName,
+}: WeatherDetailProps) => {
   const {
     data: weatherByCoords,
     isLoading: weatherCoordsLoading,
@@ -82,9 +88,16 @@ export const WeatherDetail = ({ lat, lon, location }: WeatherDetailProps) => {
   return (
     <div>
       <div className="flex item-center justify-between gap-2 mb-4">
-        <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold">
-          {locationName}
-        </h1>
+        <div>
+          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold">
+            {locationName}
+          </h1>
+          {originalName && (
+            <p className="text-sm md:text-lg text-gray-500 mt-1">
+              {originalName}
+            </p>
+          )}
+        </div>
         <AddFavoriteButton
           weather={weatherByCoords}
           locationName={locationName}

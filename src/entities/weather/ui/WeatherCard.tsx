@@ -1,4 +1,5 @@
 import { AddFavoriteButton } from "@/features/favorites/ui/AddFavoriteButton";
+import { formatLocationName } from "@/shared/lib/locationUtils";
 import type { WeatherResponse, ForecastResponse } from "../model/types";
 
 interface WeatherCardProps {
@@ -20,7 +21,11 @@ export const WeatherCard = ({
     <div className="p-6 border-2 border-gray-300 rounded-lg bg-white shadow-sm">
       {/* 헤더 영역 */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold">{displayName || weather.name}</h2>
+        <h2 className="text-2xl font-bold">
+          {displayName
+            ? formatLocationName(displayName)
+            : locationName || weather.name}
+        </h2>
 
         {/* 헤더에 즐겨찾기 버튼 (아이콘만) */}
         {showFavoriteButton && locationName && (

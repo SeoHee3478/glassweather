@@ -8,13 +8,13 @@ import { WeatherCard } from "@/entities/weather";
 import { useGeolocation } from "@/shared/hooks/useGeolocation";
 import { convertToEnglishCity } from "@/shared/lib/cityNameMapper";
 import { LocationSearch } from "@/features/location-search/ui/LocationSearch";
-import { useEffect, useState } from "react";
+import { useState, useMemo } from "react";
 import { getCityCoordinates } from "@/shared/lib/locationUtils";
 import { FavoritesList } from "@/features/favorites/ui/FavoritesList";
+import { useKoreanCityName } from "@/entities/location/model/queries";
 
 export const WeatherDashboard = () => {
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
-  const [useCoords, setUseCoords] = useState(false);
 
   const {
     latitude: userLat,
@@ -23,30 +23,10 @@ export const WeatherDashboard = () => {
     loading: geoLoading,
   } = useGeolocation();
 
-  // 검색 위치의 좌표 또는 사용자 위치
-  const targetCoords =
-    selectedLocation && useCoords
-      ? getCityCoordinates(selectedLocation)
-      : { lat: userLat, lon: userLon };
-
-  // 좌표 기반 조회 (targetCoords 사용)
-  const {
-    data: weatherByCoords,
-    isLoading: weatherCoordsLoading,
-    error: weatherCoordsError,
-  } = useWeatherByCoords(targetCoords?.lat, targetCoords?.lon);
-
-  const {
-    data: forecastByCoords,
-    isLoading: forecastCoordsLoading,
-    error: forecastCoordsError,
-  } = useForecastByCoords(targetCoords?.lat, targetCoords?.lon);
-
-  // 도시명 기반
-  const searchCity =
-    selectedLocation && !useCoords
-      ? convertToEnglishCity(selectedLocation)
-      : "";
+  // 선택된 위치가 있으면 도시명으로 먼저 조회 시도
+  const searchCity = selectedLocation
+    ? convertToEnglishCity(selectedLocation)
+    : "";
 
   const {
     data: weatherByCity,
@@ -60,54 +40,107 @@ export const WeatherDashboard = () => {
     error: forecastCityError,
   } = useForecastByCity(searchCity);
 
-  const canUseCoordsAsBackup = selectedLocation
-    ? !!getCityCoordinates(selectedLocation)
-    : false;
+  // 도시명 조회가 실패했고, 좌표가 있으면 좌표로 조회
+  const shouldUseCoords = useMemo(() => {
+    if (!selectedLocation) return true; // 선택 안했으면 사용자 위치 사용
 
-  // 도시명 실패 시 좌표로 전환
-  useEffect(() => {
-    if (
-      selectedLocation &&
-      (weatherCityError || forecastCityError) &&
-      !useCoords
-    ) {
-      const cityCoords = getCityCoordinates(selectedLocation);
-      if (cityCoords) {
-        queueMicrotask(() => {
-          setUseCoords(true);
-        });
-      }
+    const hasError = weatherCityError || forecastCityError;
+    const canUseCoords = !!getCityCoordinates(selectedLocation);
+
+    return hasError && canUseCoords;
+  }, [selectedLocation, weatherCityError, forecastCityError]);
+
+  // 좌표 결정: 선택된 위치의 좌표 또는 사용자 위치
+  const targetCoords = useMemo(() => {
+    if (!selectedLocation || !shouldUseCoords) {
+      return { lat: userLat, lon: userLon };
     }
-  }, [weatherCityError, forecastCityError, selectedLocation, useCoords]);
+    return (
+      getCityCoordinates(selectedLocation) || { lat: userLat, lon: userLon }
+    );
+  }, [selectedLocation, shouldUseCoords, userLat, userLon]);
 
-  const currentWeather = selectedLocation
-    ? useCoords
-      ? weatherByCoords
-      : weatherByCity
-    : weatherByCoords;
+  // 좌표 기반 조회
+  const {
+    data: weatherByCoords,
+    isLoading: weatherCoordsLoading,
+    error: weatherCoordsError,
+  } = useWeatherByCoords(targetCoords?.lat, targetCoords?.lon);
 
-  const currentForecast = selectedLocation
-    ? useCoords
-      ? forecastByCoords
-      : forecastByCity
-    : forecastByCoords;
+  const {
+    data: forecastByCoords,
+    isLoading: forecastCoordsLoading,
+    error: forecastCoordsError,
+  } = useForecastByCoords(targetCoords?.lat, targetCoords?.lon);
 
-  const isLoading = selectedLocation
-    ? useCoords
+  // 한글 지명 조회(좌표가 있을 때만)
+  const { data: koreanCityName, isLoading: isLoadingKoreanName } =
+    useKoreanCityName(
+      targetCoords?.lat ?? undefined,
+      targetCoords?.lon ?? undefined
+    );
+
+  // 현재 사용할 날씨 데이터 결정
+  const currentWeather = useMemo(() => {
+    if (!selectedLocation) return weatherByCoords;
+    return shouldUseCoords ? weatherByCoords : weatherByCity;
+  }, [selectedLocation, shouldUseCoords, weatherByCoords, weatherByCity]);
+
+  const currentForecast = useMemo(() => {
+    if (!selectedLocation) return forecastByCoords;
+    return shouldUseCoords ? forecastByCoords : forecastByCity;
+  }, [selectedLocation, shouldUseCoords, forecastByCoords, forecastByCity]);
+
+  // 로딩 상태
+  const isLoading = useMemo(() => {
+    if (!selectedLocation) {
+      return geoLoading || weatherCoordsLoading || forecastCoordsLoading;
+    }
+    return shouldUseCoords
       ? weatherCoordsLoading || forecastCoordsLoading
-      : weatherCityLoading || forecastCityLoading
-    : geoLoading || weatherCoordsLoading || forecastCoordsLoading;
+      : weatherCityLoading || forecastCityLoading;
+  }, [
+    selectedLocation,
+    shouldUseCoords,
+    geoLoading,
+    weatherCoordsLoading,
+    forecastCoordsLoading,
+    weatherCityLoading,
+    forecastCityLoading,
+  ]);
 
-  const hasError = selectedLocation
-    ? useCoords
-      ? weatherCoordsError || forecastCoordsError
-      : (weatherCityError || forecastCityError) && !canUseCoordsAsBackup
-    : weatherCoordsError || forecastCoordsError;
+  // 에러 상태
+  const hasError = useMemo(() => {
+    if (!selectedLocation) {
+      return !!(weatherCoordsError || forecastCoordsError);
+    }
+
+    const canUseCoordsAsBackup = !!getCityCoordinates(selectedLocation);
+
+    if (shouldUseCoords) {
+      return !!(weatherCoordsError || forecastCoordsError);
+    }
+
+    // 도시명 조회 중이고, 에러가 있지만 좌표 백업이 없는 경우
+    return !!(weatherCityError || forecastCityError) && !canUseCoordsAsBackup;
+  }, [
+    selectedLocation,
+    shouldUseCoords,
+    weatherCoordsError,
+    forecastCoordsError,
+    weatherCityError,
+    forecastCityError,
+  ]);
 
   const handleLocationSelect = (location: string) => {
     setSelectedLocation(location);
-    setUseCoords(false);
   };
+
+  const displayLocationName = useMemo(() => {
+    if (selectedLocation) return selectedLocation;
+    if (!isLoadingKoreanName && koreanCityName) return koreanCityName;
+    return currentWeather?.name || "현재 위치";
+  }, [selectedLocation, isLoadingKoreanName, koreanCityName, currentWeather]);
 
   return (
     <div className="space-y-6">
@@ -142,7 +175,7 @@ export const WeatherDashboard = () => {
           weather={currentWeather}
           forecast={currentForecast}
           displayName={selectedLocation || undefined}
-          locationName={selectedLocation || "현재 위치"}
+          locationName={displayLocationName}
           showFavoriteButton={true}
         />
       )}
