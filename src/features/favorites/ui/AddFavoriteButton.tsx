@@ -2,6 +2,7 @@ import { useFavoritesStore } from "../model/useFavoritesStore";
 import type { WeatherResponse } from "@/entities/weather/model/types";
 import { StarIcon } from "@heroicons/react/24/outline";
 import { StarIcon as StarSolid } from "@heroicons/react/24/solid";
+import { toast } from "sonner";
 
 interface AddFavoriteButtonProps {
   weather: WeatherResponse;
@@ -18,20 +19,31 @@ export const AddFavoriteButton = ({
   const removeFavorite = useFavoritesStore((state) => state.removeFavorite);
 
   const favorites = useFavoritesStore((state) => state.favorites);
-  const favoriteId = `${weather.coord.lat},${weather.coord.lon}`;
+  const favoriteId = `${weather.coord.lat.toFixed(4)},${weather.coord.lon.toFixed(4)}`;
   const isAlreadyFavorite = favorites.some((fav) => fav.id === favoriteId);
+
+  const maxFavorites = useFavoritesStore((state) => state.maxFavorites);
 
   const handleToggleFavorite = () => {
     if (isAlreadyFavorite) {
       removeFavorite(favoriteId);
+      toast.success("즐겨찾기에서 삭제되었습니다");
     } else {
-      addFavorite({
+      const result = addFavorite({
         id: favoriteId,
         name: locationName,
         alias: "",
         lat: weather.coord.lat,
         lon: weather.coord.lon,
       });
+
+      if (result.success) {
+        toast.success("즐겨찾기에 추가되었습니다");
+      } else if (result.reason === "max_reached") {
+        toast.error(`최대 ${maxFavorites}개까지만 추가할 수 있습니다`);
+      } else if (result.reason === "duplicate") {
+        toast.error("이미 즐겨찾기에 추가된 장소입니다");
+      }
     }
   };
 

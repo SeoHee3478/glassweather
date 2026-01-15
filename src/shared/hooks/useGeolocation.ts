@@ -13,43 +13,42 @@ const DEFAULT_LOCATION = {
 };
 
 export const useGeolocation = () => {
-  const [location, setLocation] = useState<GeolocationState>({
-    latitude: null,
-    longitude: null,
-    error: null,
-    loading: true,
+  const [location, setLocation] = useState<GeolocationState>(() => {
+    if (!navigator.geolocation) {
+      return {
+        ...DEFAULT_LOCATION,
+        error: "브라우저가 위치 서비스를 지원하지 않습니다.",
+        loading: false,
+      };
+    }
+
+    return {
+      latitude: null,
+      longitude: null,
+      error: null,
+      loading: true,
+    };
   });
 
   useEffect(() => {
     if (!navigator.geolocation) {
-      queueMicrotask(() => {
-        setLocation({
-          ...DEFAULT_LOCATION,
-          error: "브라우저가 위치 서비스를 지원하지 않습니다.",
-          loading: false,
-        });
-      });
       return;
     }
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        queueMicrotask(() => {
-          setLocation({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-            error: null,
-            loading: false,
-          });
+        setLocation({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          error: null,
+          loading: false,
         });
       },
       (error) => {
-        queueMicrotask(() => {
-          setLocation({
-            ...DEFAULT_LOCATION,
-            error: `위치 정보를 가져올 수 없습니다: ${error.message}`,
-            loading: false,
-          });
+        setLocation({
+          ...DEFAULT_LOCATION,
+          error: `위치 정보를 가져올 수 없습니다: ${error.message}`,
+          loading: false,
         });
       }
     );

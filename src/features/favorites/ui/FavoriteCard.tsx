@@ -7,6 +7,8 @@ import {
   StarIcon as StarSolid,
 } from "@heroicons/react/24/solid";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { toast } from "sonner";
+import { formatLocationName } from "@/shared/lib/locationUtils";
 
 interface FavoriteCardProps {
   favorite: Favorite;
@@ -26,33 +28,57 @@ export const FavoriteCard = ({ favorite }: FavoriteCardProps) => {
   );
 
   const handleCardClick = () => {
-    // 편집 중이 아닐 때만 상세 페이지로 이동
     if (!isEditing) {
-      navigate(
-        `/detail?lat=${favorite.lat}&lon=${
-          favorite.lon
-        }&location=${encodeURIComponent(favorite.name)}`
-      );
+      const params = new URLSearchParams({
+        lat: String(favorite.lat),
+        lon: String(favorite.lon),
+        location: favorite.alias || favorite.name, // 별칭 우선
+      });
+
+      // 별칭이 있으면 원본 이름도 추가
+      if (favorite.alias) {
+        params.append("originalName", favorite.name);
+      }
+
+      navigate(`/detail?${params.toString()}`);
     }
   };
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (
-      confirm(`"${favorite.alias || favorite.name}"을(를) 삭제하시겠습니까?`)
-    ) {
-      removeFavorite(favorite.id);
-    }
+    const displayName = favorite.alias || formatLocationName(favorite.name);
+
+    toast(`"${displayName}"을(를) 삭제하시겠습니까?`, {
+      action: {
+        label: "삭제",
+        onClick: () => {
+          removeFavorite(favorite.id);
+          toast.success("즐겨찾기에서 삭제되었습니다");
+        },
+      },
+      cancel: {
+        label: "취소",
+        onClick: () => {},
+      },
+      duration: 5000,
+    });
   };
 
   const handleEditClick = (e: React.MouseEvent) => {
     e.stopPropagation();
+    setEditValue(favorite.alias || favorite.name);
     setIsEditing(true);
   };
 
   const handleSaveAlias = (e: React.MouseEvent) => {
     e.stopPropagation();
-    updateAlias(favorite.id, editValue);
+    const currentAlias = favorite.alias || favorite.name;
+    const hasChanged = editValue !== currentAlias;
+
+    if (hasChanged) {
+      updateAlias(favorite.id, editValue);
+      toast.success("별칭이 수정되었습니다");
+    }
     setIsEditing(false);
   };
 
@@ -88,11 +114,11 @@ export const FavoriteCard = ({ favorite }: FavoriteCardProps) => {
           ) : (
             <div>
               <h3 className="font-semibold text-lg truncate">
-                {favorite.alias || favorite.name}
+                {favorite.alias || formatLocationName(favorite.name)}
               </h3>
               {favorite.alias && (
                 <p className="text-xs text-gray-500 truncate">
-                  {favorite.name}
+                  {formatLocationName(favorite.name)}
                 </p>
               )}
             </div>

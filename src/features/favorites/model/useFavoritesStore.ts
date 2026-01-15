@@ -9,12 +9,16 @@ export interface Favorite {
   lon: number;
 }
 
+export type AddFavoriteResult =
+  | { success: true }
+  | { success: false; reason: "max_reached" | "duplicate" };
+
 interface FavoritesState {
   favorites: Favorite[];
   maxFavorites: number;
 
   // Actions
-  addFavorite: (favorite: Favorite) => void;
+  addFavorite: (favorite: Favorite) => AddFavoriteResult;
   removeFavorite: (id: string) => void;
   updateAlias: (id: string, alias: string) => void;
   isFavorite: (id: string) => boolean;
@@ -33,16 +37,15 @@ export const useFavoritesStore = create<FavoritesState>()(
         const { favorites } = get();
 
         if (favorites.length >= MAX_FAVORITES) {
-          alert(`최대 ${MAX_FAVORITES}개까지만 추가할 수 있습니다.`);
-          return;
+          return { success: false, reason: "max_reached" };
         }
 
         if (favorites.some((f) => f.id === favorite.id)) {
-          alert("이미 즐겨찾기에 추가된 장소입니다.");
-          return;
+          return { success: false, reason: "duplicate" };
         }
 
         set({ favorites: [...favorites, favorite] });
+        return { success: true };
       },
 
       removeFavorite: (id) => {
