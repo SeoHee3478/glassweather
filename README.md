@@ -231,7 +231,6 @@ if (getChosung(district.full) === searchTerm) return 60;
   - Zustand는 상태 변경 시 구독 중인 모든 컴포넌트에 자동으로 반영
 - **영구 저장 자동화**: persist 미들웨어로 localStorage 읽기/쓰기 자동 처리
 - **간결한 API**: Context + useReducer 대비 보일러플레이트 최소화
-- **경량**: Redux Toolkit(~40KB) 대비 Zustand(~3KB)
 
 ```typescript
 // localStorage 직접 사용 시 문제점
