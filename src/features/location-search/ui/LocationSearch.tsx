@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import koreaDistricts from "@/shared/data/korea_districts.json";
 import { searchDistricts } from "@/shared/lib/searchUtils";
+import { formatLocationName } from "@/shared/lib/locationUtils";
 import debounce from "lodash/debounce";
 
 interface LocationSearchProps {
@@ -44,9 +45,9 @@ export const LocationSearch = ({ onSelectLocation }: LocationSearchProps) => {
   );
 
   const handleSelectLocation = (location: string) => {
-    setSearchQuery(location);
+    setSearchQuery(formatLocationName(location));
     setIsOpen(false);
-    onSelectLocation(location);
+    onSelectLocation(location); // 원본 데이터는 그대로 전달
   };
 
   const handleScroll = useCallback(() => {
@@ -99,7 +100,7 @@ export const LocationSearch = ({ onSelectLocation }: LocationSearchProps) => {
               onClick={() => handleSelectLocation(location)}
               className="w-full px-4 py-3 text-left hover:bg-gray-100 transition-colors border-b last:border-b-0"
             >
-              {location.replace(/-/g, " > ")}
+              {formatLocationName(location)}
             </button>
           ))}
 

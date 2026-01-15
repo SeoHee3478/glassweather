@@ -8,6 +8,7 @@ import {
 } from "@heroicons/react/24/solid";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { toast } from "sonner";
+import { formatLocationName } from "@/shared/lib/locationUtils";
 
 interface FavoriteCardProps {
   favorite: Favorite;
@@ -39,7 +40,7 @@ export const FavoriteCard = ({ favorite }: FavoriteCardProps) => {
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const displayName = favorite.alias || favorite.name;
+    const displayName = favorite.alias || formatLocationName(favorite.name);
 
     toast(`"${displayName}"을(를) 삭제하시겠습니까?`, {
       action: {
@@ -106,11 +107,11 @@ export const FavoriteCard = ({ favorite }: FavoriteCardProps) => {
           ) : (
             <div>
               <h3 className="font-semibold text-lg truncate">
-                {favorite.alias || favorite.name}
+                {favorite.alias || formatLocationName(favorite.name)}
               </h3>
               {favorite.alias && (
                 <p className="text-xs text-gray-500 truncate">
-                  {favorite.name}
+                  {formatLocationName(favorite.name)}
                 </p>
               )}
             </div>
